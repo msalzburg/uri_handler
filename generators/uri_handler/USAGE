@@ -1,5 +1,5 @@
 Usage:
 
-  script/generate uri_handler Class attribute_name
+  script/generate uri_handler Class attribute_name (attribute_name2)
 
 This will create a migration that will add the proper columns to your class's table.

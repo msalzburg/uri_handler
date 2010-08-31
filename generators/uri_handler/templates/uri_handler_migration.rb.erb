@@ -1,17 +1,15 @@
 class <%= migration_name %> < ActiveRecord::Migration
   def self.up
-<% uri_attributes.each do |attribute| -%>
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_source_uri, :string
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_redirected_uri, :string
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_status_code, :integer
+<% uri_columns.each do |uri_column| -%>
+    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_source_uri, :string
+    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_redirected_uri, :string
 <% end -%>
   end
 
   def self.down
-<% uri_attributes.each do |attributet| -%>
-		remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_source_uri, :string
-		remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_redirected_uri, :string
-		remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attribute %>_status_code, :integer
+<% uri_columns.each do |uri_column| -%>
+    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_source_uri, :string
+    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_redirected_uri, :string
 <% end -%>
   end
 end
