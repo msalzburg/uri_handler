@@ -66,7 +66,8 @@ Gem::Specification.new do |s|
      "spec/lib/uri_handler/response_spec.rb",
      "spec/lib/uri_handler_spec.rb",
      "spec/spec.opts",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "uri_handler.gemspec"
   ]
   s.homepage = %q{http://github.com/msalzburg/uri_handler}
   s.rdoc_options = ["--charset=UTF-8"]
