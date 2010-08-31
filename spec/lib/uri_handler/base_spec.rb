@@ -79,6 +79,13 @@ module URIHandler
         subject.redirect_log[0].uri.should == "http://bit.ly/cUpI7Q"
         subject.redirect_log[1].uri.should == "http://www.github.com"
         subject.redirect_log[2].uri.should == "http://github.com/" # trailing "/" only appears on resolved uri
+      end
+      
+      it "should resolve those nasty google alert redirects" do
+        uri = Base.new("http://www.google.com/url?sa=X&q=http://www.biosphaeren.de/forum/viewtopic.php%3Fp%3D71653&ct=ga&cad=:s7:f1:v1:d2:i1:lt:e0:p0:t1283202926:&cd=tp4b7JGWfTY&usg=AFQjCNG5zc_di8Lw6ssNKEf7bxgklIBQow", :redirect_limit => 25)
+        uri.redirected?.should be_true
+        uri.uri.should == "http://www.biosphaeren.de/forum/viewtopic.php?p=71653"
+        uri.valid_status?.should be_true
       end      
     end
 
