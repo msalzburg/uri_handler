@@ -7,9 +7,9 @@ begin
     gem.name = "uri_handler"
     gem.summary = %Q{a handsome gem to resolve uri redirects and handle uri validation within activerecord}
     gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "salzburg@emjot.de"
+    gem.email = "admin@emjot.de"
     gem.homepage = "http://github.com/msalzburg/uri_handler"
-    gem.authors = ["msalzburg"]
+    gem.authors = ["msalzburg", "mherold"]
     gem.add_dependency "activerecord", ">= 2.3.8"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
