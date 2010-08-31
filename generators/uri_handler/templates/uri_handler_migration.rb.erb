@@ -1,19 +1,15 @@
 class <%= migration_name %> < ActiveRecord::Migration
   def self.up
-<% attachments.each do |attachment| -%>
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_file_name, :string
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_content_type, :string
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_file_size, :integer
-    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_updated_at, :datetime
+<% uri_columns.each do |uri_column| -%>
+    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_source_uri, :string
+    add_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_redirected_uri, :string
 <% end -%>
   end
 
   def self.down
-<% attachments.each do |attachment| -%>
-    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_file_name
-    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_content_type
-    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_file_size
-    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= attachment %>_updated_at
+<% uri_columns.each do |uri_column| -%>
+    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_source_uri, :string
+    remove_column :<%= class_name.underscore.camelize.tableize %>, :<%= uri_column %>_redirected_uri, :string
 <% end -%>
   end
 end

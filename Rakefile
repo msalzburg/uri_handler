@@ -6,11 +6,11 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "uri_handler"
     gem.summary = %Q{a handsome gem to resolve uri redirects and handle uri validation within activerecord}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{longer description of your gem}
     gem.email = "admin@emjot.de"
     gem.homepage = "http://github.com/msalzburg/uri_handler"
     gem.authors = ["msalzburg", "mherold"]
-    gem.add_dependency "activerecord", ">= 2.3.8"
+    gem.add_dependency "rails", "= 2.3.8"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
