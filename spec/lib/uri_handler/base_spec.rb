@@ -151,6 +151,23 @@ module URIHandler
         uri = Base.new("http://www.github.com")
         uri.valid_length?.should == true
       end
+      
+      it "should handle a passed status code option" do
+        uri = Base.new("http://www.github.com", :status => "200")
+        uri.status.should == "200"
+        uri.valid_status.include?("200").should be_true
+        uri.valid_status?.should be_true
+        
+        uri = Base.new("http://bit.ly/cUpI7Q", :status => "200", :redirect_limit => 0)
+        uri.status.should == "301"
+        uri.valid_status.include?("301").should be_false
+        uri.valid_status?.should be_false
+        
+        uri = Base.new("http://bit.ly/cUpI7Q", :status => "301", :redirect_limit => 0)
+        uri.status.should == "301"
+        uri.valid_status.include?("301").should be_true
+        uri.valid_status?.should be_true
+      end
        
     end
   
