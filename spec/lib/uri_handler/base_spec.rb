@@ -3,13 +3,18 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 module URIHandler
   describe Base do
     
-    it "should handle URIs URI::InvalidURIError Exception" do
-      pending
-      # TODO test with empty or unreachable uri string
-      uri = Base.new("")
-      uri_original = URI.parse("")
+    it "should be able to handle incorrect URIs" do
+      uri = Base.new("http://wrong:uri")
+      uri.is_valid?.should == false
+      uri.invalid_uri_error.should_not == nil
+      uri.redirected?.should == false
+      uri.valid_host?.should == false
+      uri.valid_length?.should == false
+      uri.valid_scheme?.should == false
+      lambda {uri.status()}.should raise_error #(URI::InvalidURIError)
+      lambda {uri.uri()}.should raise_error #(URI::InvalidURIError)
     end
-            
+  
     context "status codes" do
       
       it "should determine the current HTTP status code" do
@@ -50,7 +55,7 @@ module URIHandler
         subject.redirect_log[2].uri.should == "http://github.com/" # trailing "/" only appears on resolved uri
       end      
     end
-    
+
     context "options and validations" do  
           
       it "should handle a passed scheme option" do

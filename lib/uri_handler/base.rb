@@ -22,6 +22,8 @@ module URIHandler
     attr_reader :source_uri
     # @return [Array] of valid schemes symbols e.g. :ftp, :http
     attr_reader :valid_schemes
+    # @return [URI::InvalidURIError] if URI could not be parsed
+    attr_reader :invalid_uri_error
     
     # @param [String] uri the URI as string format
     # @param [Hash] options the options to create a SmartURI objects
@@ -54,7 +56,8 @@ module URIHandler
           rescue
             # FIXME: handle errors
           end
-        rescue
+        rescue URI::InvalidURIError => e
+          @invalid_uri_error = e
         end
         
       else
@@ -65,18 +68,20 @@ module URIHandler
     # Determines if URI has redirects.
     # @return [Boolean] if URI was redirected while resolving.
     def redirected?
-      @redirect_log.size > 1
+      valid_uri? && (@redirect_log.size > 1)
     end
     
     # Determines the URI HTTP status code
     # @return [String] with status code e.g. "200" or empty string. 
     def status
+      raise @invalid_uri_error unless valid_uri?
       @status || String.new
     end
     
     # Determines the final URI.
     # @return [String] representation of the final URI - after redirect resolvement
     def uri
+      raise @invalid_uri_error unless valid_uri?
       return @redirect_log.last.uri unless @redirect_log.empty?
       return @source_uri
     end
@@ -90,12 +95,17 @@ module URIHandler
     # Validates URI on base of all validation cases.
     # @return [Boolean] if URI is valid
     def is_valid?
-      valid_host? && valid_length? && valid_scheme?
+      valid_uri? && valid_host? && valid_length? && valid_scheme?
+    end
+    
+    def valid_uri?
+      @invalid_uri_error.nil?
     end
     
     # Validates the URI host and tries to match wildcard hosts.
     # @return [Boolean] if URI host ist valid
     def valid_host?
+      return false unless valid_uri?
                   
       # check for wildcard definition e.g. *.github.com
       wildcard_hosts = Array.new
@@ -111,14 +121,14 @@ module URIHandler
     
     # Validates the URI length.
     # @return [Boolean] True if the URI length is below the length option.
-    def valid_length?
-      "#{uri}".size <= @valid_length
+    def valid_length?      
+      valid_uri? && ("#{uri}".size <= @valid_length)
     end
     
     # Validates the URI scheme.
     # @return [Boolean] if URI scheme is valid.
     def valid_scheme?
-      @valid_schemes.include?(@scheme)
+      valid_uri? && (@valid_schemes.include?(@scheme))
     end
     
     private
@@ -127,6 +137,8 @@ module URIHandler
     # @param [String] the URI as String format
     # @return [Net::HTTPResponse] the final HTTP response
     def fetch_uri(uri, limit)
+      raise @invalid_uri_error unless valid_uri?
+    
       response  = Net::HTTP.get_response(URI.parse(uri))
       @redirect_log.push(Response.new(uri, response.code))
       
