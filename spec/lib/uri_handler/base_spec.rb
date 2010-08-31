@@ -7,14 +7,40 @@ module URIHandler
       uri = Base.new("http://wrong:uri")
       uri.is_valid?.should == false
       uri.invalid_uri_error.should_not == nil
-      uri.redirected?.should == false
+      uri.invalid_uri_error?.should == true
+      uri.fetch_error.should == nil    
+      uri.fetch_error?.should == false  
       uri.valid_host?.should == false
       uri.valid_length?.should == false
       uri.valid_scheme?.should == false
-      lambda {uri.status()}.should raise_error #(URI::InvalidURIError)
-      lambda {uri.uri()}.should raise_error #(URI::InvalidURIError)
+      uri.valid_resolved?.should == false
+      lambda {uri.status()}.should raise_error(URI::InvalidURIError)
+      lambda {uri.uri()}.should raise_error(URI::InvalidURIError)
+      lambda {uri.url()}.should raise_error(URI::InvalidURIError)
+      lambda {uri.host()}.should raise_error(URI::InvalidURIError)
+      lambda {uri.scheme()}.should raise_error(URI::InvalidURIError)
+      lambda {uri.redirected?}.should raise_error(URI::InvalidURIError)
     end
-  
+    
+    it "should be able to handle problems fetching URLs" do
+      uri = Base.new("http://www.heise.de:8889/")
+      uri.is_valid?.should == false
+      uri.invalid_uri_error.should == nil
+      uri.invalid_uri_error?.should == false
+      uri.fetch_error.should_not == nil
+      uri.fetch_error?.should == true  
+      lambda {uri.redirected?()}.should raise_error
+      uri.valid_host?.should == true
+      uri.valid_length?.should == true
+      uri.valid_scheme?.should == true
+      uri.valid_resolved?.should == false
+      lambda {uri.status()}.should raise_error
+      lambda {uri.uri()}.should raise_error
+      lambda {uri.url()}.should raise_error
+      uri.host.should == "www.heise.de"
+      uri.scheme.should == :http
+    end
+ 
     context "status codes" do
       
       it "should determine the current HTTP status code" do
@@ -127,6 +153,6 @@ module URIHandler
       end
        
     end
-    
+  
   end
 end
