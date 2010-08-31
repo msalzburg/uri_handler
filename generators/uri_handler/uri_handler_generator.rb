@@ -1,9 +1,9 @@
 class URIHandlerGenerator < Rails::Generator::NamedBase
-  attr_accessor :attribute, :migration_name
+  attr_accessor :uri_attributes, :migration_name
 
   def initialize(args, options = {})
     super
-    @class_name, @attribute = args[0]
+    @class_name, @uri_attributes = args[0], args[1..-1]
   end
 
   def manifest
@@ -19,9 +19,9 @@ class URIHandlerGenerator < Rails::Generator::NamedBase
   private
 
   def generate_file_name
-    names = attachments.map{|a| a.underscore }
+    names = uri_attributes.map{|a| a.underscore }
     names = names[0..-2] + ["and", names[-1]] if names.length > 1
-    "add_attachments_#{names.join("_")}_to_#{@class_name.underscore}"
+    "add_uri_attributes_#{names.join("_")}_to_#{@class_name.underscore}"
   end
 
 end
