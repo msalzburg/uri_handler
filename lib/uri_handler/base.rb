@@ -164,7 +164,7 @@ module URIHandler
     end
     
     def valid_status?
-      @valid_status.include?(@status)
+      !invalid_uri_error? &&(@valid_status.include?(@status))
     end
     
     private

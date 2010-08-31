@@ -82,6 +82,9 @@ module URIHandler
       end
       
       it "should resolve those nasty google alert redirects" do
+        uri = Base.new("http://www.google.com/url?sa=X&#38;q=http://uk.shopping.com/o2-usb-e169-modem/products&#38;ct=ga&#38;cad=:s7:f1:v1:d2:i1:lt:e0:p0:t1282160966:&#38;cd=0U4pTbhMdSQ&#38;usg=AFQjCNHZL2qSnFcw7GGVZZ2x-OoZhc3lzA", :redirect_limit => 25)
+        uri.valid_status?.should be_false
+        
         uri = Base.new("http://www.google.com/url?sa=X&q=http://www.biosphaeren.de/forum/viewtopic.php%3Fp%3D71653&ct=ga&cad=:s7:f1:v1:d2:i1:lt:e0:p0:t1283202926:&cd=tp4b7JGWfTY&usg=AFQjCNG5zc_di8Lw6ssNKEf7bxgklIBQow", :redirect_limit => 25)
         uri.redirected?.should be_true
         uri.uri.should == "http://www.biosphaeren.de/forum/viewtopic.php?p=71653"
