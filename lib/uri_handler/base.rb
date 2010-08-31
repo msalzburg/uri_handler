@@ -24,6 +24,8 @@ module URIHandler
     attr_reader :valid_schemes
     # @return [URI::InvalidURIError] if URI could not be parsed
     attr_reader :invalid_uri_error
+    # @return [Array] of valid status codes
+    attr_reader :valid_status
     
     # @param [String] uri the URI as string format
     # @param [Hash] options the options to create a SmartURI objects
@@ -43,6 +45,7 @@ module URIHandler
         @valid_hosts    = options[:host].to_a       || Array.new
         @valid_length   = options[:length]          || 255.to_i
         @valid_schemes  = Array(options[:scheme])   || [:ftp, :http]
+        @valid_status   = options[:status].to_a     || ["200"]
         
         begin
           # TODO: catch URI::InvalidURIError - e.g. empty string or broken
@@ -95,7 +98,7 @@ module URIHandler
     # Validates URI on base of all validation cases.
     # @return [Boolean] if URI is valid
     def is_valid?
-      valid_uri? && valid_host? && valid_length? && valid_scheme?
+      valid_uri? && valid_host? && valid_length? && valid_scheme? && valid_status?
     end
     
     def valid_uri?
@@ -129,6 +132,10 @@ module URIHandler
     # @return [Boolean] if URI scheme is valid.
     def valid_scheme?
       valid_uri? && (@valid_schemes.include?(@scheme))
+    end
+    
+    def valid_status?
+      @valid_status.include?(@status)
     end
     
     private
