@@ -30,7 +30,7 @@ module URIHandler
     
     def resolve
       unless @steps.empty?
-        @last_target = nil
+        @cached_target = nil
        begin
           fetch_uri(@options[:limit].to_i)
         rescue Exception => e
@@ -75,7 +75,6 @@ module URIHandler
     def reset_handler
       @invalid_uri_error  = nil
       @resolve_error      = nil
-      
       @cached_target      = nil
       @steps              = Array.new
     end
