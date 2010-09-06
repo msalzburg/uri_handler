@@ -17,7 +17,9 @@ module URIHandler
       
       define_method("#{name}") do
         uri_handler_for(name)
-      end      
+      end
+      
+      before_save :save_uri_handler
     end
     
     # Returns the uri_handler_options
@@ -38,8 +40,15 @@ module URIHandler
       target  = self.send "#{name}_target".to_sym if respond_to? "#{name}_target".to_sym
       options.merge!({:target => target}) unless target.blank?
       
-      @_uri_handler_options ||= {}
-      @_uri_handler_options[name] ||= Advanced.new(options)
+      @_uri_handler ||= {}
+      @_uri_handler[name] ||= Advanced.new(options)
+    end
+    
+    def save_uri_handler
+      @_uri_handler.each_pair do |name, value|
+        send("#{name}_source=", value.source.uri) if respond_to? "#{name}_source".to_sym
+        send("#{name}_target=", value.target.uri) if respond_to? "#{name}_target".to_sym
+      end
     end        
   end
   

@@ -1,6 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-
 class Tableless < ActiveRecord::Base
   def self.columns
     @columns ||= [];
@@ -27,19 +26,18 @@ class Foo < Tableless
   })
   
   acts_as_uri :link
-  
 end
 
 describe "URIHandler" do
   it "should integrate via a activerecord acts_as_uri class method" do
-    test = Foo.new()
+    test = Foo.new
     test.url.source.uri.should == "http://www.github.com"
     test.url.is_resolved?.should be_true
     test.url.target.uri.should == "http://github.com/"
   end
   
   it "should be available as activerecord attribute" do
-    test = Foo.new()
+    test = Foo.new
     test.url.source = "http://github.com"
     test.url.is_resolved?.should be_true
     test.url.is_redirected?.should be_false
@@ -57,7 +55,18 @@ describe "URIHandler" do
     
     test.url.target.uri.should  == "http://github.com/"
     test.link.target.uri.should == "http://github.com/"
-    
     test.url.target.should != test.link.target 
+  end
+  
+  it "should save the uri_handler before activerecord save" do
+    test = Foo.new
+    test.link_source = "test"
+    test.link.source = "http://www.github.com"
+    test.link.resolve
+    test.save_uri_handler
+    test.link.is_resolved?.should be_true
+    test.link_source.should == "http://www.github.com"
+    test.link.target.uri.should == "http://github.com/"
+    test.link_target.should == "http://github.com/"
   end
 end
