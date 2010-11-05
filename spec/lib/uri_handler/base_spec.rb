@@ -121,7 +121,13 @@ module URIHandler
         uri.host.should == "www.github.com"
         uri.valid_host?.should == true
       end
-            
+      
+      it "should extract only the host information from passed host option" do
+        pending
+        uri = Base.new("http://www.github.com", :host => "http://www.github.com/rails")
+        uri.valid_hosts.include?("www.github.com").should == true
+      end
+      
       it "should handle toplevel hosts with wildcard subdomains" do
         uri = Base.new("http://www.github.com", :host => ["www.37signals.com", "*.github.com"])
         uri.host.should == "www.github.com"

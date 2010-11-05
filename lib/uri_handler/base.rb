@@ -1,6 +1,5 @@
 require 'net/http'
 require 'uri'
-require File.dirname(__FILE__) + '/response'
 
 module URIHandler
   class Base
