@@ -1,6 +1,51 @@
-= uri_handler
+= uri_handler -- easy uri resolution and validation
 
 Description goes here.
+
+== Setup
+
+Create a migration for your uri attribute(s).
+
+  % script/generate uri_handler model_name uri_attribute_name [uri_attribute_name_two]
+  
+Example:
+
+  % script/generate uri_handler my_model url
+
+Creates an url at
+
+
+Define uri_handler within your model
+
+  class MyModel < ActiveRecord::Base
+    
+    has_uri_handler :url
+    
+  end
+
+== Configuration
+
+The Base class has the full list of configuration options. Here's an example:
+
+  class MyModel < ActiveRecord::Base
+  
+    has_uri_handler :url, {
+      :auto_resolve => true,      # default: false
+      :length       => 500,       # default: 250            
+      :limit        => 99         # default: 25
+    }
+  
+  end
+
+== Download and installation
+
+The latest version of uri_handler can be installed by rubygems:
+
+  % [sudo] gem install uri_handler
+  
+Source code can be downloaded on GitHub
+
+* http://github.com/msalzburg/uri_handler
 
 == Note on Patches/Pull Requests
  
