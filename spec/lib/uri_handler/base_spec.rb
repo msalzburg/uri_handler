@@ -44,7 +44,7 @@ module URIHandler
     context "status codes" do
       
       it "should determine the current HTTP status code" do
-        uri = Base.new("http://github.com")
+        uri = Base.new("https://github.com")
         uri.status.should == "200"
         
         uri = Base.new("http://bit.ly/cUpI7Q", :redirect_limit => 1)
@@ -71,14 +71,15 @@ module URIHandler
       
       it "should follow up redirects and determine redirect uri" do
         subject.redirected?.should be_true
-        subject.uri.should == "http://github.com/"
+        subject.uri.should == "https://github.com/"
       end
       
       it "should keep a protocol of redirects" do
-        subject.redirect_log.size > 2
+        subject.redirect_log.size > 3
         subject.redirect_log[0].uri.should == "http://bit.ly/cUpI7Q"
         subject.redirect_log[1].uri.should == "http://www.github.com"
-        subject.redirect_log[2].uri.should == "http://github.com/" # trailing "/" only appears on resolved uri
+        subject.redirect_log[2].uri.should == "http://github.com/"
+        subject.redirect_log[3].uri.should == "https://github.com/"
       end
       
       it "should resolve those nasty google alert redirects" do

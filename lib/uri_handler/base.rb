@@ -1,4 +1,5 @@
 require 'net/http'
+require 'net/https'
 require 'uri'
 
 module URIHandler
@@ -43,7 +44,7 @@ module URIHandler
         @valid_hosts    = Array(options[:host])
         @valid_length   = options[:length]          || 255.to_i
         @valid_schemes  = Array(options[:scheme])
-        @valid_schemes  = [:ftp, :http] if @valid_schemes.empty?
+        @valid_schemes  = [:ftp, :http, :https] if @valid_schemes.empty?
         @valid_status   = Array(options[:status])
         @valid_status   = ["200"] if @valid_status.empty?
         
@@ -172,11 +173,20 @@ module URIHandler
     # Resolves an URI, follows redirects and fetches the HTTP response.
     # @param [String] the URI as String format
     # @return [Net::HTTPResponse] the final HTTP response
-    def fetch_uri(uri, limit)
+    def fetch_uri(uri_as_string, limit)
       raise @invalid_uri_error if invalid_uri_error?
-    
-      response  = Net::HTTP.get_response(URI.parse(uri))
-      @redirect_log.push(Response.new(uri, response.code))
+      
+      uri = URI.parse(uri_as_string)
+      if uri.scheme == 'https'
+        http             = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl     = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        path             = uri.path.strip.empty? ? '/' : uri.path
+        response         = http.request(Net::HTTP::Get.new(path))
+      else
+        response         = Net::HTTP.get_response(uri)
+      end
+      @redirect_log.push(Response.new(uri_as_string, response.code))
       
       if limit > 1 && response.is_a?(Net::HTTPRedirection)
         response  = fetch_uri(response['location'], limit - 1)
