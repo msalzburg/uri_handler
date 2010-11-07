@@ -74,6 +74,16 @@ module URIHandler
         subject.uri.should == "https://github.com/"
       end
       
+      it "should handle relative redirects" do
+        uri = Base.new("/relative/url/must/not/be/first", :redirect_limit => 25)
+        uri.valid_status?.should be_false
+        
+        uri = Base.new("http://www.google.com/url?sa=X&q=http://friendfeed.com/rooms/gn-internet/de6341a4/klarmobil-umts-stick-zehn-euro-billiger&ct=ga&cad=:s7:f1:v1:d2:i1:lt:e0:p0:t1288793626:&cd=BEQB9Pbm4Y0&usg=AFQjCNEoKoDwJyNxUpwZwdU3OgNLDyrzGw", :redirect_limit => 25)
+        uri.redirected?.should be_true
+        uri.uri.should == "http://friendfeed.com/gn-internet/de6341a4/klarmobil-umts-stick-zehn-euro-billiger"
+        uri.valid_status?.should be_true
+      end
+      
       it "should keep a protocol of redirects" do
         subject.redirect_log.size > 3
         subject.redirect_log[0].uri.should == "http://bit.ly/cUpI7Q"

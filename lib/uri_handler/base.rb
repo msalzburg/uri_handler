@@ -52,7 +52,7 @@ module URIHandler
           # TODO: catch URI::InvalidURIError - e.g. empty string or broken
           @uri_obj  = URI.parse(@source_uri)
           @host     = @uri_obj.host
-          @scheme   = @uri_obj.scheme.to_sym
+          @scheme   = @uri_obj.scheme.nil? ? nil : @uri_obj.scheme.to_sym
         
           begin
             response  = fetch_uri(@source_uri, @redirect_limit)
@@ -171,12 +171,37 @@ module URIHandler
     private
     
     # Resolves an URI, follows redirects and fetches the HTTP response.
-    # @param [String] the URI as String format
+    # @param [String]  the URI as String format
+    # @param [Integer] how many redirects to follow (max.)
+    # @param [Hash]    (option :previous_uri is used internally to handle relative redirects)
     # @return [Net::HTTPResponse] the final HTTP response
-    def fetch_uri(uri_as_string, limit)
+    def fetch_uri(uri_as_string, limit, options = {})
       raise @invalid_uri_error if invalid_uri_error?
       
       uri = URI.parse(uri_as_string)
+      # handle relative URLs
+      if (uri.is_a?(URI::Generic)) && options[:previous_uri]
+        previous_uri      = options[:previous_uri]
+        new_uri_as_string = "#{previous_uri.scheme}://#{previous_uri.host}"
+        unless (previous_uri.port == 80 && previous_uri.scheme == 'http') ||
+           (previous_uri.port == 443 && previous_uri.scheme == 'https')
+          new_uri_as_string += ":#{previous_uri.port}"
+        end
+        if uri_as_string.strip =~ /^\//
+          # given path is relative to root => just append
+          uri_as_string = new_uri_as_string + uri_as_string.strip
+        elsif previous_uri.path.strip =~ /^(.+\/)[^\/]*$/   
+          # given path is relative to previous directory => remove last part from previous path
+          path = $1
+          path = $1 if path =~ /^(.*)(\?.*)$/ # -> remove query string
+          uri_as_string = new_uri_as_string + path + uri_as_string.strip
+        else
+          # this should not happen => in case it does, leave URI as it was before
+        end
+        uri  = URI.parse(uri_as_string)
+      end
+      
+      # get HTTP / HTTPS response
       if uri.scheme == 'https'
         http             = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl     = true
@@ -188,8 +213,9 @@ module URIHandler
       end
       @redirect_log.push(Response.new(uri_as_string, response.code))
       
+      # handle redirects
       if limit > 1 && response.is_a?(Net::HTTPRedirection)
-        response  = fetch_uri(response['location'], limit - 1)
+        response  = fetch_uri(response['location'], limit - 1, {:previous_uri => uri})
       end
       return response
     end
