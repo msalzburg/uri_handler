@@ -180,7 +180,7 @@ module URIHandler
       
       uri = URI.parse(uri_as_string)
       # handle relative URLs
-      if (uri.is_a?(URI::Generic)) && options[:previous_uri]
+      if (uri.instance_of?(URI::Generic)) && options[:previous_uri]
         previous_uri      = options[:previous_uri]
         new_uri_as_string = "#{previous_uri.scheme}://#{previous_uri.host}"
         unless (previous_uri.port == 80 && previous_uri.scheme == 'http') ||
