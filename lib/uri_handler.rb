@@ -1,4 +1,4 @@
-unless defined?(URIHandler::Version)
+unless defined?(URIHandler::VERSION)
   require File.join(File.dirname(__FILE__), 'uri_handler/version.rb')
 end
 
