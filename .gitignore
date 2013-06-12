@@ -19,5 +19,6 @@ rdoc
 doc
 .yardoc
 pkg
+Gemfile.lock
 
 ## PROJECT::SPECIFIC
